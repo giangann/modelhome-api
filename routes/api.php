@@ -20,10 +20,11 @@ Route::group(['namespace' => '\App\Http\Controllers\Api'], function () {
     Route::post('home-page/update','HomePageController@handleUpdate');
     Route::apiResource('home-page','HomePageController');
 
-    Route::group(['middleware'=>'auth:api'],function (){
+    Route::post('posts/create','PostController@store');
 
+    Route::apiResource('posts','PostController');
+    Route::group(['middleware'=>'auth:api'],function (){
         Route::apiResources([
         ]);
-
     });
 });
