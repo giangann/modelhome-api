@@ -9,6 +9,11 @@ class Post extends Model
 {
     use HasFactory;
 
+    const MODEL_TYPE = [
+        'PROJECT'=>'Project',
+        'POST'=>'Post'
+    ];
+
     protected $fillable = ['postable_type','postable_id','content'];
 
     public function postable(){

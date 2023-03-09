@@ -21,8 +21,9 @@ Route::group(['namespace' => '\App\Http\Controllers\Api'], function () {
     Route::apiResource('home-page','HomePageController');
 
     Route::post('posts/create','PostController@store');
-
+    Route::apiResource('projects','ProjectController');
     Route::apiResource('posts','PostController');
+
     Route::group(['middleware'=>'auth:api'],function (){
         Route::apiResources([
         ]);

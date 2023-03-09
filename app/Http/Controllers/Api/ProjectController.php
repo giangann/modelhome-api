@@ -3,11 +3,38 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Post;
+use App\Models\Project;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
-class PostController extends Controller
+class ProjectController extends Controller
 {
+    public function generateKey()
+    {
+        $characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        $pin = mt_rand(1000000, 9999999)
+            . mt_rand(1000000, 9999999)
+            . $characters[rand(0, strlen($characters) - 1)];
+
+        return str_shuffle($pin);
+    }
+
+    public function uploadImage($project)
+    {
+        $filename = $project['thumb'];
+        $folder_name = 'project/' . $this->generateKey();
+        if (request()->hasFile('thumb')) {
+            Storage::disk('public')->delete($filename);
+            $thumb =$project['thumb'];
+            $filename = Storage::disk('public')->put(
+                $folder_name,
+                $thumb
+            );
+        }
+
+        return $filename;
+    }
     /**
      * Display a listing of the resource.
      *
@@ -16,7 +43,6 @@ class PostController extends Controller
     public function index()
     {
         //
-        return Post::all();
     }
 
     /**
@@ -37,12 +63,17 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
-        $data = $request->all();
-        $post = new Post();
-        $result = $post->create($data);
 
-        return $result;
+        $data = $request->all();
+        $data['thumb'] = $this->uploadImage($data);
+
+        $project = Project::query()->create($data);
+        $project->save();
+
+        return response()->json([
+            'data'=>$project,
+            'status'=>200
+        ]);
     }
 
     /**
@@ -89,4 +120,6 @@ class PostController extends Controller
     {
         //
     }
+
+
 }
