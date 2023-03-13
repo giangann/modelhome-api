@@ -9,7 +9,7 @@ class Project extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['thumb','name','summary','slug','location','customer_name','square','finish_in'];
+    protected $fillable = ['thumb','name','summary','slug','location','customer_name','square','finish_in','is_main'];
 
     public function post(){
         return $this->morphOne(Post::class,'postable');
