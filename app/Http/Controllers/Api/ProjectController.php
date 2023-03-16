@@ -44,18 +44,8 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        //
-        return Project::all();
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+        $listProject = DB::table('projects')->orderBy('is_main','desc')->get();
+        return $listProject;
     }
 
     /**
@@ -115,17 +105,6 @@ class ProjectController extends Controller
     }
 
     /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -138,28 +117,38 @@ class ProjectController extends Controller
         $data = $request->all();
         $project = Project::find($id);
 
-        if($data['is_main']){
+        if(isset($data['is_main'])){
             $this->resetMainProject();
             $data['is_main'] = (bool)$data['is_main'];
         }
 
+        $data['thumb'] = $this->uploadImage($data);
         $project->update(collect($data)
             ->only((new Project())->getFillable())->all());
 
         $post = $project->post;
 
         if($post){
-            $post->update([
-                'content'=>$data['content'],
-            ]);
+            if(isset($data['content'])){
+                $post->update([
+                    'content'=>$data['content'],
+                ]);
+            }
+            else {
+                $post->update([
+                    'content'=>null,
+                ]);
+            }
         }else{
-            $postData = [
-                'content'=>$data['content'],
-                'postable_type'=>get_class($project),
-                'postable_id'=>intval($id)
-            ];
-            $post = new Post();
-            $post->create($postData);
+            if(isset($data['content'])){
+                $postData = [
+                    'content'=>$data['content'],
+                    'postable_type'=>get_class($project),
+                    'postable_id'=>intval($id)
+                ];
+                $post = new Post();
+                $post->create($postData);
+            }
         }
 
 
@@ -181,5 +170,16 @@ class ProjectController extends Controller
         DB::table('projects')->update(['is_main'=>false]);
     }
 
+    public function getBySlug($slug){
+        $project = Project::firstWhere('slug',$slug);
+
+        $post = $project->post;
+
+        if($post){
+            $project['content'] = $post->content;
+        }
+
+        return $project;
+    }
 
 }
