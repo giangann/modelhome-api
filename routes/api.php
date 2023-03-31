@@ -17,6 +17,9 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 Route::group(['namespace' => '\App\Http\Controllers\Api'], function () {
+    Route::get('tags/by-tag-id/{id}','TagController@byTagId');
+    Route::get('tags/by-project/{id}','TagController@byProject');
+    Route::get('tags/by-blog','TagController@byBlog');
     Route::post('home-page/update','HomePageController@handleUpdate');
     Route::apiResource('home-page','HomePageController');
 
@@ -25,6 +28,9 @@ Route::group(['namespace' => '\App\Http\Controllers\Api'], function () {
     Route::post('projects/update/{id}','ProjectController@update');
     Route::apiResource('projects','ProjectController');
     Route::apiResource('posts','PostController');
+    Route::apiResource('tags','TagController');
+
+
 
     Route::group(['middleware'=>'auth:api'],function (){
         Route::apiResources([

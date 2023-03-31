@@ -14,4 +14,8 @@ class Project extends Model
     public function post(){
         return $this->morphOne(Post::class,'postable');
     }
+
+    public function tags(){
+        return $this->morphToMany(Tag::class,'model','model_has_tags');
+    }
 }

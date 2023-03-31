@@ -44,7 +44,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        $listProject = DB::table('projects')->orderBy('is_main','desc')->get();
+        $listProject = Project::orderBy('is_main','desc')->with('tags')->get();
         return $listProject;
     }
 
@@ -97,6 +97,12 @@ class ProjectController extends Controller
         $project = Project::find($id);
         $post = $project->post;
 
+        $projectTag = [];
+        foreach ($project->tags as $tag){
+            array_push($projectTag,intval($tag['id']));
+        }
+        $project['tag_id']=$projectTag;
+
         if($post){
             $project['content'] = $post->content;
         }
@@ -126,8 +132,8 @@ class ProjectController extends Controller
         $project->update(collect($data)
             ->only((new Project())->getFillable())->all());
 
+        // update post of project
         $post = $project->post;
-
         if($post){
             if(isset($data['content'])){
                 $post->update([
@@ -151,6 +157,16 @@ class ProjectController extends Controller
             }
         }
 
+        // update tags of project
+        // delete all old tags
+        $tag = $project->tags()->detach();
+
+        // add new tags to pivot
+        $tagArr = json_decode($data['tag_id']);
+        $tagIdArr=collect($tagArr)->map(function($tag) use ($tagArr){
+            return $tag->id;
+        });
+        $project->tags()->attach($tagIdArr);
 
         return $project;
     }
@@ -175,8 +191,11 @@ class ProjectController extends Controller
 
         $post = $project->post;
 
+        // didn't get content because content data size is too big (> 1Mb)
+        unset($post['content']);
+
         if($post){
-            $project['content'] = $post->content;
+            $project['post_id'] = $post->id;
         }
 
         return $project;
