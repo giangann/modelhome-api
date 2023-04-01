@@ -79,6 +79,15 @@ class ProjectController extends Controller
             $post->create($postData);
         }
 
+        // add new tags to pivot
+        if (isset($data['tag_id'])){
+            $tagArr = json_decode($data['tag_id']);
+            $tagIdArr=collect($tagArr)->map(function($tag) use ($tagArr){
+                return $tag->id;
+            });
+            $project->tags()->attach($tagIdArr);
+        }
+
         return response()->json([
             'data'=>$project,
             'status'=>200
@@ -157,16 +166,25 @@ class ProjectController extends Controller
             }
         }
 
-        // update tags of project
-        // delete all old tags
-        $tag = $project->tags()->detach();
 
-        // add new tags to pivot
-        $tagArr = json_decode($data['tag_id']);
-        $tagIdArr=collect($tagArr)->map(function($tag) use ($tagArr){
-            return $tag->id;
-        });
-        $project->tags()->attach($tagIdArr);
+        // update tags of project
+        if(isset($data['tag_id'])){
+            $tagArr = json_decode($data['tag_id']);
+            $tagIdArr=collect($tagArr)->map(function($tag) use ($tagArr){
+                return $tag->id;
+            });
+
+            // delete all old tags
+            $project->tags()->detach();
+
+            // add new tags to pivot
+            $project->tags()->attach($tagIdArr);
+        } else {
+            if($project->tags){
+                // delete all old tags
+                $project->tags()->detach();
+            }
+        }
 
         return $project;
     }
