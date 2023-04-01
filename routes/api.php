@@ -27,6 +27,8 @@ Route::group(['namespace' => '\App\Http\Controllers\Api'], function () {
     Route::get('projects/get-by-slug/{slug}','ProjectController@getBySlug');
     Route::post('projects/update/{id}','ProjectController@update');
     Route::post('blogs/update/{id}','BlogController@update');
+    Route::get('blogs/get-by-slug/{slug}','BlogController@getBySlug');
+
     Route::apiResource('projects','ProjectController');
     Route::apiResource('blogs','BlogController');
     Route::apiResource('posts','PostController');

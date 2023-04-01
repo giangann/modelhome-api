@@ -206,4 +206,20 @@ class BlogController extends Controller
     {
         //
     }
+
+    public function getBySlug($slug){
+        $blog = Blog::firstWhere('slug',$slug);
+
+        $post = $blog->post;
+
+        // didn't get content because content data size is too big (> 1Mb)
+        unset($post['content']);
+
+        if($post){
+            $blog['post_id'] = $post->id;
+        }
+
+        return $blog;
+    }
+
 }

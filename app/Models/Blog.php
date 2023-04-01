@@ -9,7 +9,7 @@ class Blog extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['author','title','thumb','summary'];
+    protected $fillable = ['author','title','thumb','summary','slug'];
 
     public function post(){
         return $this->morphOne(Post::class,'postable');
