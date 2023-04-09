@@ -10,6 +10,10 @@ class Blog extends Model
     use HasFactory;
 
     protected $fillable = ['author','title','thumb','summary','slug'];
+    protected $casts = [
+        'created_at' => 'datetime:Y-m-d H:i:s',
+        'updated_at' => 'datetime:Y-m-d H:i:s',
+    ];
 
     public function post(){
         return $this->morphOne(Post::class,'postable');
