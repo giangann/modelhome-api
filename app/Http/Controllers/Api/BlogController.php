@@ -118,8 +118,9 @@ class BlogController extends Controller
         $blog['tag_id']=$blogTag;
 
         if($post){
-            $blog['content'] = $post->content;
+            $blog['post_id'] = $post->id;
         }
+        unset($blog->post);
 
         return $blog;
     }

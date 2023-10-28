@@ -102,7 +102,6 @@ class ProjectController extends Controller
      */
     public function show($id)
     {
-        //
         $project = Project::find($id);
         $post = $project->post;
 
@@ -113,8 +112,9 @@ class ProjectController extends Controller
         $project['tag_id']=$projectTag;
 
         if($post){
-            $project['content'] = $post->content;
+            $project['post_id'] = $post->id;
         }
+        unset($project->post); //remove redudant for increase permformance
 
         return $project;
     }
